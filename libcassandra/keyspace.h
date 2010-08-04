@@ -171,21 +171,30 @@ public:
   std::vector<org::apache::cassandra::Column> getSliceRange(const std::string &key,
                                                             const org::apache::cassandra::ColumnParent &col_parent,
                                                             org::apache::cassandra::SlicePredicate &pred);
-
-  std::map<std::string, std::vector<org::apache::cassandra::Column> >
+	
+  std::vector< std::pair<std::string, std::vector<org::apache::cassandra::Column> > >
   getRangeSlice(const org::apache::cassandra::ColumnParent &col_parent,
                 const org::apache::cassandra::SlicePredicate &pred,
                 const std::string &start,
                 const std::string &finish,
                 const int32_t count);
+  
+  std::vector< std::pair<std::string, std::vector<org::apache::cassandra::Column> > >
+  getRangeSlices(const org::apache::cassandra::ColumnParent &col_parent,
+                const org::apache::cassandra::SlicePredicate &pred,
+                const org::apache::cassandra::KeyRange &range);
 
-  std::map<std::string, std::vector<org::apache::cassandra::SuperColumn> >
+  std::vector< std::pair<std::string, std::vector<org::apache::cassandra::SuperColumn> > >
   getSuperRangeSlice(const org::apache::cassandra::ColumnParent &col_parent,
                      const org::apache::cassandra::SlicePredicate &pred,
                      const std::string &start,
                      const std::string &finish,
                      const int32_t count);
 
+  std::vector< std::pair<std::string, std::vector<org::apache::cassandra::SuperColumn> > >
+  getSuperRangeSlices(const org::apache::cassandra::ColumnParent &col_parent,
+                     const org::apache::cassandra::SlicePredicate &pred,
+                     const org::apache::cassandra::KeyRange &range);
 
   /**
    * @return number of columns in a row or super column

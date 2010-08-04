@@ -236,21 +236,19 @@ vector<Column> Keyspace::getSliceRange(const string &key,
 }
 
 
-map<string, vector<Column> > Keyspace::getRangeSlice(const ColumnParent &col_parent,
+
+vector< pair<string, vector<Column> > > Keyspace::getRangeSlices(const ColumnParent &col_parent,
                                                      const SlicePredicate &pred,
-                                                     const string &start,
-                                                     const string &finish,
-                                                     const int32_t row_count)
+                                                     const org::apache::cassandra::KeyRange &range)
 {
-  map<string, vector<Column> > ret;
+  vector< pair<string, vector<Column> > > ret;
   vector<KeySlice> key_slices;
-  client->getCassandra()->get_range_slice(key_slices,
+    
+  client->getCassandra()->get_range_slices(key_slices,
                                           name,
                                           col_parent,
                                           pred,
-                                          start,
-                                          finish,
-                                          row_count,
+                                          range,
                                           level);
   if (! key_slices.empty())
   {
@@ -258,20 +256,20 @@ map<string, vector<Column> > Keyspace::getRangeSlice(const ColumnParent &col_par
          it != key_slices.end();
          ++it)
     {
-      ret.insert(make_pair((*it).key, getColumnList((*it).columns)));
+      ret.push_back(make_pair((*it).key, getColumnList((*it).columns)));
     }
   }
   return ret;
 }
 
 
-map<string, vector<SuperColumn> > Keyspace::getSuperRangeSlice(const ColumnParent &col_parent,
-                                                               const SlicePredicate &pred,
-                                                               const string &start,
-                                                               const string &finish,
-                                                               const int32_t row_count)
+vector< pair<string, vector<Column> > > Keyspace::getRangeSlice(const ColumnParent &col_parent,
+                                                     const SlicePredicate &pred,
+                                                     const string &start,
+                                                     const string &finish,
+                                                     const int32_t row_count)
 {
-  map<string, vector<SuperColumn> > ret;
+  vector< pair<string, vector<Column> > > ret;
   vector<KeySlice> key_slices;
   client->getCassandra()->get_range_slice(key_slices,
                                           name,
@@ -287,7 +285,62 @@ map<string, vector<SuperColumn> > Keyspace::getSuperRangeSlice(const ColumnParen
          it != key_slices.end();
          ++it)
     {
-      ret.insert(make_pair((*it).key, getSuperColumnList((*it).columns)));
+      ret.push_back(make_pair((*it).key, getColumnList((*it).columns)));
+    }
+  }
+  return ret;
+}
+
+
+vector< pair<string, vector<SuperColumn> > > Keyspace::getSuperRangeSlices(const ColumnParent &col_parent,
+                                                               const SlicePredicate &pred,
+                                                               const KeyRange &range)
+{
+  vector< pair<string, vector<SuperColumn> > > ret;
+  vector<KeySlice> key_slices;
+  
+  client->getCassandra()->get_range_slices(key_slices,
+                                          name,
+                                          col_parent,
+                                          pred,
+                                          range,
+                                          level);
+
+  if (! key_slices.empty())
+  {
+    for (vector<KeySlice>::iterator it= key_slices.begin();
+         it != key_slices.end();
+         ++it)
+    {
+      ret.push_back(make_pair((*it).key, getSuperColumnList((*it).columns)));
+    }
+  }
+  return ret;
+}
+
+vector< pair<string, vector<SuperColumn> > > Keyspace::getSuperRangeSlice(const ColumnParent &col_parent,
+                                                               const SlicePredicate &pred,
+                                                               const string &start,
+                                                               const string &finish,
+                                                               const int32_t row_count)
+{
+  vector< pair<string, vector<SuperColumn> > > ret;
+  vector<KeySlice> key_slices;
+  client->getCassandra()->get_range_slice(key_slices,
+                                          name,
+                                          col_parent,
+                                          pred,
+                                          start,
+                                          finish,
+                                          row_count,
+                                          level);
+  if (! key_slices.empty())
+  {
+    for (vector<KeySlice>::iterator it= key_slices.begin();
+         it != key_slices.end();
+         ++it)
+    {
+      ret.push_back(make_pair((*it).key, getSuperColumnList((*it).columns)));
     }
   }
   return ret;
