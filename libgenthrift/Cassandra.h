@@ -7,6 +7,7 @@
 #define Cassandra_H
 
 #include <TProcessor.h>
+#include <TApplicationException.h>
 #include "cassandra_types.h"
 
 namespace org { namespace apache { namespace cassandra {
